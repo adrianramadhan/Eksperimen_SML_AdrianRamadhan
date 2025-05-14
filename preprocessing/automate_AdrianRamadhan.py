@@ -57,7 +57,7 @@ def build_preprocessor(df: pd.DataFrame):
     # Pipeline kategorikal
     categorical_pipeline = Pipeline([
         ('imputer', SimpleImputer(strategy='most_frequent')),
-        ('onehot', OneHotEncoder(handle_unknown='ignore', sparse=False))
+        ('onehot', OneHotEncoder(handle_unknown='ignore', sparse_output=False))
     ])
 
     preprocessor = ColumnTransformer([
