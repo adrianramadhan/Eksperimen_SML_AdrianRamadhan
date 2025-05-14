@@ -32,7 +32,7 @@ jobs:
             --random_state 42
 
       - name: Upload preprocessed dataset
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4
         with:
           name: mental-health-preprocessed
           path: preprocessing/mental_health_dataset_preprocessing/
