@@ -1,0 +1,37 @@
+name: Preprocess Mental Health Dataset
+
+on:
+  push:
+    branches: [ master ]
+  workflow_dispatch:
+
+jobs:
+  preprocess:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v4
+        with:
+          python-version: '3.12.7'
+
+      - name: Install deps
+        run: |
+          pip install pandas scikit-learn numpy
+
+      - name: Run preprocessing
+        run: |
+          python preprocessing/automate_AdrianRamadhan.py \
+            --input mental_health_dataset.csv \
+            --output preprocessing/mental_health_dataset_preprocessing
+
+      - name: Debug folder contents
+        run: |
+          echo "Contents of preprocessing folder:"
+          ls -R preprocessing/mental_health_dataset_preprocessing/
+
+      - name: Upload preprocessed dataset
+        uses: actions/upload-artifact@v4
+        with:
+          name: mental-health-preprocessed
+          path: preprocessing/mental_health_dataset_preprocessing/
