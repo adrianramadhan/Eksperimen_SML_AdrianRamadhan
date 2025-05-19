@@ -2,35 +2,61 @@ name: Preprocess Mental Health Dataset
 
 on:
   push:
-    branches: [ master ]
+    branches: [master]
   workflow_dispatch:
 
 jobs:
   preprocess:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
-
-      - uses: actions/setup-python@v4
+      # 1) Checkout dengan izin push
+      - name: Checkout repository
+        uses: actions/checkout@v4
         with:
-          python-version: '3.12.7'
+          # biar kita bisa push perubahan kembali
+          persist-credentials: true
+          fetch-depth: 0
 
+      # 2) Setup Python
+      - name: Set up Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: "3.12.7"
+
+      # 3) Install dependencies
       - name: Install deps
         run: |
           pip install pandas scikit-learn numpy
 
+      # 4) Run preprocessing script
       - name: Run preprocessing
         run: |
           python preprocessing/automate_AdrianRamadhan.py \
             --input mental_health_dataset.csv \
             --output preprocessing/mental_health_dataset_preprocessing
 
+      # 5) Debug: lihat isi folder hasil preprocessing
       - name: Debug folder contents
         run: |
           echo "Contents of preprocessing folder:"
           ls -R preprocessing/mental_health_dataset_preprocessing/
 
-      - name: Upload preprocessed dataset
+      # 6) Commit & push hasil preprocessing kembali ke repo
+      - name: Configure Git user
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+
+      - name: Commit preprocessed data
+        run: |
+          git add preprocessing/mental_health_dataset_preprocessing/
+          git diff --quiet && echo "No changes to commit" || git commit -m "chore: update preprocessed dataset [skip ci]"
+
+      - name: Push changes
+        run: git push origin master
+
+      # 7) (Optional) Upload as artifact as fallback
+      - name: Upload preprocessed dataset artifact
         uses: actions/upload-artifact@v4
         with:
           name: mental-health-preprocessed
