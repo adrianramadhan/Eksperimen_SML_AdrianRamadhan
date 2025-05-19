@@ -1,5 +1,8 @@
 name: Preprocess Mental Health Dataset
 
+permissions:
+  contents: write
+
 on:
   push:
     branches: [master]
